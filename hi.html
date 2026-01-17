@@ -1,25 +1,393 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <title>2D Block Survival: The Zombie King</title>
     <style>
         body {
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #ec045d;
+            margin: 0;
+            background: #87CEEB;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
         }
 
-        h1 {
-            color: violet;
+        canvas {
+            display: block;
+        }
+
+        /* UI Elements */
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            text-shadow: 2px 2px 0 #000;
+            pointer-events: none;
+        }
+
+        #timer-ui {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: #ffeb3b;
+            font-size: 35px;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        #wave-announcer {
+            position: absolute;
+            width: 100%;
+            top: 25%;
+            text-align: center;
+            color: #ffeb3b;
+            font-size: 28px;
+            font-weight: bold;
+            pointer-events: none;
+            text-shadow: 3px 3px 5px #000;
+        }
+
+        /* Inventory Bar */
+        #inventory {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            padding: 15px 30px;
+            border-radius: 10px;
+            color: white;
+            display: flex;
+            gap: 30px;
+            border: 3px solid #5D4037;
+        }
+
+        .inv-item {
+            text-align: center;
+        }
+
+        .inv-val {
+            color: #4CAF50;
+            font-weight: bold;
+            display: block;
+        }
+
+        /* Crafting Menu */
+        #crafting-menu {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #333;
+            border: 6px solid #111;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            z-index: 100;
+            min-width: 300px;
+        }
+
+        .craft-item {
+            margin: 15px 0;
+            padding: 10px;
+            background: #444;
+            border: 2px solid #666;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+
+        .screen h1 {
+            font-size: 60px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 
 <body>
-    <h1>Can u believe ezaan made this? definetely not</h1>
+
+    <div id="ui">
+        <h2>HP: <span id="p-hp">10</span>/10</h2>
+        <p>A/D: Walk | W: Jump | R: Attack | E: Crafting</p>
+    </div>
+
+    <div id="timer-ui"></div>
+    <div id="wave-announcer"></div>
+
+    <div id="inventory">
+        <div class="inv-item">Wood<span id="inv-wood" class="inv-val">0</span></div>
+        <div class="inv-item">Sword<span id="inv-sword" class="inv-val">Basic</span></div>
+        <div class="inv-item">Armor<span id="inv-armor" class="inv-val">None</span></div>
+    </div>
+
+    <div id="crafting-menu">
+        <h2>CRAFTING TABLE</h2>
+        <div class="craft-item">Strong Sword (12 Wood) <br><button onclick="craft('sword2')">CRAFT</button></div>
+        <div class="craft-item">King Sword (30 Wood) <br><button onclick="craft('sword3')">CRAFT</button></div>
+        <div class="craft-item">Wooden Chestplate (20 Wood) <br><button onclick="craft('armor1')">CRAFT</button></div>
+        <div class="craft-item">Reinforced Chestplate (40 Wood) <br><button onclick="craft('armor2')">CRAFT</button>
+        </div>
+        <p style="font-size: 12px; color: #aaa;">Press 'E' to Exit</p>
+    </div>
+
+    <div id="win-screen" class="screen">
+        <h1 style="color:#7cfc00">VICTORY</h1><button onclick="location.reload()">PLAY AGAIN</button>
+    </div>
+    <div id="loss-screen" class="screen">
+        <h1 style="color:red">YOU DIED</h1><button onclick="location.reload()">TRY AGAIN</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // --- Game Variables ---
+        let woodCount = 0;
+        let swordLevel = 1; // 1: Basic, 2: Strong, 3: King
+        let armorLevel = 0; // 0: None, 1: Wood, 2: Reinforced
+        let currentWave = 1;
+        let isWaveActive = true;
+        let isCrafting = false;
+        let isGameOver = false;
+
+        const gravity = 0.8;
+        const groundY = canvas.height - 100;
+
+        const player = { x: 150, y: groundY - 60, w: 40, h: 60, vx: 0, vy: 0, hp: 10, speed: 6, jump: -15, ground: false };
+        const tree = { x: 400, y: groundY - 150, w: 60, h: 150 };
+        let zombies = [];
+        const keys = {};
+
+        // --- Event Listeners ---
+        window.addEventListener("keydown", e => {
+            keys[e.key.toLowerCase()] = true;
+            if (e.key.toLowerCase() === 'e') toggleCrafting();
+            if (e.key.toLowerCase() === 'r') attack();
+        });
+        window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
+        window.addEventListener("mousedown", () => {
+            if (Math.abs(player.x - tree.x) < 120) {
+                woodCount++;
+                updateUI();
+            }
+        });
+
+        // --- Core Functions ---
+        function toggleCrafting() {
+            isCrafting = !isCrafting;
+            document.getElementById("crafting-menu").style.display = isCrafting ? "block" : "none";
+        }
+
+        function craft(item) {
+            if (item === 'sword2' && woodCount >= 12) { woodCount -= 12; swordLevel = 2; }
+            else if (item === 'sword3' && woodCount >= 30) { woodCount -= 30; swordLevel = 3; }
+            else if (item === 'armor1' && woodCount >= 20) { woodCount -= 20; armorLevel = 1; }
+            else if (item === 'armor2' && woodCount >= 40) { woodCount -= 40; armorLevel = 2; }
+            else { alert("More wood required!"); return; }
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById("inv-wood").innerText = woodCount;
+            document.getElementById("p-hp").innerText = Math.ceil(player.hp);
+            document.getElementById("inv-sword").innerText = swordLevel === 3 ? "King" : (swordLevel === 2 ? "Strong" : "Basic");
+            document.getElementById("inv-armor").innerText = armorLevel === 2 ? "Reinforced" : (armorLevel === 1 ? "Wooden" : "None");
+        }
+
+        function spawnWave(waveNum) {
+            zombies = [];
+            isWaveActive = true;
+            document.getElementById("wave-announcer").innerText = "";
+
+            if (waveNum === 1) {
+                zombies.push(createZombie(800, 10, 'normal'));
+            } else if (waveNum === 2) {
+                zombies.push(createZombie(800, 10, 'normal'));
+                zombies.push(createZombie(950, 20, 'tank'));
+                zombies.push(createZombie(1100, 10, 'normal'));
+            } else if (waveNum === 3) {
+                zombies.push(createZombie(1000, 50, 'boss'));
+            }
+        }
+
+        function createZombie(x, hp, type) {
+            return {
+                x, y: groundY - 60,
+                w: type === 'boss' ? 70 : 40,
+                h: type === 'boss' ? 100 : 60,
+                hp, maxHp: hp, type
+            };
+        }
+
+        function startTimer(seconds, message) {
+            isWaveActive = false;
+            let timeRemaining = seconds;
+            document.getElementById("wave-announcer").innerText = message;
+
+            const interval = setInterval(() => {
+                timeRemaining--;
+                document.getElementById("timer-ui").innerText = timeRemaining + "s";
+                if (timeRemaining <= 0) {
+                    clearInterval(interval);
+                    document.getElementById("timer-ui").innerText = "";
+                    currentWave++;
+                    spawnWave(currentWave);
+                }
+            }, 1000);
+        }
+
+        function attack() {
+            if (isCrafting || isGameOver) return;
+            const dmg = swordLevel === 3 ? 5 : (swordLevel === 2 ? 2 : 1);
+
+            zombies.forEach(z => {
+                if (Math.abs(player.x - z.x) < 100) {
+                    z.hp -= dmg;
+                }
+            });
+
+            zombies = zombies.filter(z => z.hp > 0);
+
+            if (zombies.length === 0 && isWaveActive) {
+                if (currentWave === 1) startTimer(30, "Wave 2 is coming... u have 30 seconds to gear up");
+                else if (currentWave === 2) startTimer(40, "u made the zombie king mad be prepared for his arrival u have 40 seconds");
+                else if (currentWave === 3) { isGameOver = true; document.getElementById("win-screen").style.display = "flex"; }
+            }
+        }
+
+        // --- Drawing ---
+        function drawCharacter(ent, isZombie) {
+            const w = ent.w;
+            const h = ent.h;
+
+            // Pants (Black)
+            ctx.fillStyle = "black";
+            ctx.fillRect(ent.x, ent.y + h * 0.6, w, h * 0.4);
+
+            // Shirt
+            if (!isZombie) {
+                ctx.fillStyle = armorLevel > 0 ? (armorLevel === 2 ? "#546e7a" : "#8d6e63") : "blue";
+            } else {
+                ctx.fillStyle = "blue"; // Zombies wear same blue shirt
+            }
+            ctx.fillRect(ent.x, ent.y + h * 0.25, w, h * 0.4);
+
+            // Head
+            ctx.fillStyle = isZombie ? "#4a7c44" : "#ffdbac";
+            ctx.fillRect(ent.x + w * 0.1, ent.y, w * 0.8, h * 0.3);
+
+            // Face
+            ctx.fillStyle = "black";
+            ctx.fillRect(ent.x + w * 0.25, ent.y + h * 0.1, 4, 4); // Eye L
+            ctx.fillRect(ent.x + w * 0.6, ent.y + h * 0.1, 4, 4); // Eye R
+
+            if (isZombie) {
+                ctx.fillRect(ent.x + w * 0.3, ent.y + h * 0.2, w * 0.4, 2); // Sad face
+                ctx.fillStyle = "red"; ctx.fillRect(ent.x + w * 0.7, ent.y + h * 0.15, 4, 4); // Blood
+            } else {
+                // Smile
+                ctx.beginPath(); ctx.arc(ent.x + w / 2, ent.y + h * 0.2, 6, 0.1 * Math.PI, 0.9 * Math.PI); ctx.stroke();
+            }
+
+            // Health Bar for Zombies
+            if (isZombie) {
+                ctx.fillStyle = "black"; ctx.fillRect(ent.x, ent.y - 15, w, 6);
+                ctx.fillStyle = "red"; ctx.fillRect(ent.x, ent.y - 15, (ent.hp / ent.maxHp) * w, 6);
+            }
+        }
+
+        // --- Main Loop ---
+        function loop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Background / Ground
+            ctx.fillStyle = "#228B22";
+            ctx.fillRect(0, groundY, canvas.width, 100);
+
+            // Tree
+            ctx.fillStyle = "#5D4037"; ctx.fillRect(tree.x + 20, groundY - 80, 20, 80);
+            ctx.fillStyle = "#2E7D32"; ctx.fillRect(tree.x, groundY - 150, 60, 80);
+
+            if (!isGameOver && !isCrafting) {
+                // Player Physics
+                if (keys['d']) player.vx = player.speed;
+                else if (keys['a']) player.vx = -player.speed;
+                else player.vx = 0;
+
+                if (keys['w'] && player.ground) { player.vy = player.jump; player.ground = false; }
+
+                player.vy += gravity;
+                player.x += player.vx;
+                player.y += player.vy;
+
+                if (player.y + player.h > groundY) {
+                    player.y = groundY - player.h;
+                    player.vy = 0;
+                    player.ground = true;
+                }
+
+                // Zombie Logic
+                zombies.forEach(z => {
+                    const zSpeed = z.type === 'boss' ? 1.2 : 1.8;
+                    if (z.x > player.x) z.x -= zSpeed; else z.x += zSpeed;
+
+                    z.y = groundY - z.h;
+
+                    // Damage calculation
+                    if (Math.abs(player.x - z.x) < 30) {
+                        let damageDealt = 0.05;
+                        if (armorLevel === 1) damageDealt = 0.03;
+                        if (armorLevel === 2) damageDealt = 0.01;
+                        player.hp -= damageDealt;
+                        updateUI();
+                        if (player.hp <= 0) { isGameOver = true; document.getElementById("loss-screen").style.display = "flex"; }
+                    }
+                });
+            }
+
+            drawCharacter(player, false);
+            zombies.forEach(z => drawCharacter(z, true));
+
+            requestAnimationFrame(loop);
+        }
+
+        spawnWave(1);
+        loop();
+    </script>
 </body>
 
 </html>
