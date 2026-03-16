@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ezzu's KooKbook | 50+ Halal Recipes</title>
+    <style>
+        :root {
+            --primary: #2d5a27;
+            --accent: #f4a261;
+            --italy: #008C45;
+            --japan: #BC002D;
+            --korea: #3c499e;
+            --usa: #b22234;
+            --pakistan: #00401a;
+            --light: #fffdf5;
+            --dark: #1a1a1a;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--light);
+            margin: 0;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* --- HERO --- */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1543353071-873f17a7a088?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            height: 30vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        /* --- GRID & CARDS --- */
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .country-section {
+            margin-bottom: 50px;
+            scroll-margin-top: 80px;
+        }
+
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: 0.3s;
+            border-top: 5px solid var(--primary);
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .btn-view {
+            width: 100%;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            background: var(--accent);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* --- MODAL (POP-UP) STYLES --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 15px;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="hero">
+        <h1>Ezzu's KooKbook</h1>
+        <p>Authentic Halal Global Flavors</p>
+    </div>
+
+    <nav>
+        <a href="#pakistan" class="nav-btn" style="background: var(--pakistan);">Pakistan</a>
+        <a href="#italy" class="nav-btn" style="background: var(--italy);">Italy</a>
+        <a href="#japan" class="nav-btn" style="background: var(--japan);">Japan</a>
+        <a href="#korea" class="nav-btn" style="background: var(--korea);">Korea</a>
+        <a href="#usa" class="nav-btn" style="background: var(--usa);">America</a>
+    </nav>
+
+    <div class="container">
+
+        <section id="pakistan" class="country-section">
+            <h2>🇵🇰 Pakistan</h2>
+            <div class="recipe-grid">
+                <div class="recipe-card">
+                    <h3>Sindhi Biryani</h3>
+                    <p>Basmati rice with spicy chicken.</p><button class="btn-view"
+                        onclick="openRecipe('Sindhi Biryani', 'Halal Chicken, Basmati Rice, Plum, Yogurt', '1. Sauté onions. 2. Layer rice and chicken. 3. Steam for 20 mins.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Nihari</h3>
+                    <p>Slow-cooked beef stew.</p><button class="btn-view"
+                        onclick="openRecipe('Nihari', 'Halal Beef Shank, Nihari Masala, Ginger', '1. Cook meat with spices. 2. Thicken with flour. 3. Garnish with lemon.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Seekh Kebab</h3>
+                    <p>Grilled minced meat skewers.</p><button class="btn-view"
+                        onclick="openRecipe('Seekh Kebab', 'Minced Beef, Garlic, Green Chili', '1. Mix spices with meat. 2. Thread on skewers. 3. Grill until charred.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Haleem</h3>
+                    <p>Lentil and meat porridge.</p><button class="btn-view"
+                        onclick="openRecipe('Haleem', 'Lentils, Wheat, Beef, Spices', '1. Boil lentils and wheat. 2. Slow cook meat. 3. Mash together.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Chapli Kebab</h3>
+                    <p>Peshawari flat beef patties.</p><button class="btn-view"
+                        onclick="openRecipe('Chapli Kebab', 'Minced Beef, Pomegranate Seeds', '1. Flatten meat. 2. Shallow fry in hot oil.')">Get
+                        Recipe</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="italy" class="country-section">
+            <h2>🇮🇹 Italy</h2>
+            <div class="recipe-grid" id="italy-grid">
+                <div class="recipe-card">
+                    <h3>Lasagna</h3>
+                    <p>Layered pasta with beef ragu.</p><button class="btn-view"
+                        onclick="openRecipe('Lasagna', 'Halal Beef, Lasagna Sheets, Cheese', '1. Make meat sauce. 2. Layer with pasta. 3. Bake for 40 mins.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Chicken Alfredo</h3>
+                    <p>Creamy white sauce pasta.</p><button class="btn-view"
+                        onclick="openRecipe('Chicken Alfredo', 'Chicken, Cream, Parmesan, Fettuccine', '1. Cook chicken. 2. Melt butter/cream. 3. Toss with pasta.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Margherita Pizza</h3>
+                    <p>Basil and mozzarella.</p><button class="btn-view"
+                        onclick="openRecipe('Margherita Pizza', 'Dough, Tomato Sauce, Cheese', '1. Spread sauce. 2. Add cheese. 3. Bake at high heat.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Mushroom Risotto</h3>
+                    <p>Creamy arborio rice.</p><button class="btn-view"
+                        onclick="openRecipe('Mushroom Risotto', 'Rice, Mushrooms, Veggie Stock', '1. Sauté mushrooms. 2. Add rice and stock slowly.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Seafood Pasta</h3>
+                    <p>Shrimp and mussels.</p><button class="btn-view"
+                        onclick="openRecipe('Seafood Pasta', 'Shrimp, Garlic, Olive Oil', '1. Sauté garlic. 2. Add seafood. 3. Toss with linguine.')">Get
+                        Recipe</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="japan" class="country-section">
+            <h2>🇯🇵 Japan</h2>
+            <div class="recipe-grid">
+                <div class="recipe-card">
+                    <h3>Chicken Katsu</h3>
+                    <p>Breaded fried chicken.</p><button class="btn-view"
+                        onclick="openRecipe('Chicken Katsu', 'Chicken breast, Panko, Egg', '1. Bread the chicken. 2. Deep fry until golden.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Beef Teriyaki</h3>
+                    <p>Sizzling beef in sweet glaze.</p><button class="btn-view"
+                        onclick="openRecipe('Beef Teriyaki', 'Beef slices, Soy sauce, Honey', '1. Grill beef. 2. Glaze with sauce. 3. Serve with rice.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Halal Ramen</h3>
+                    <p>Chicken broth noodles.</p><button class="btn-view"
+                        onclick="openRecipe('Halal Ramen', 'Noodles, Chicken stock, Egg', '1. Boil broth. 2. Cook noodles. 3. Combine and garnish.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Veggie Tempura</h3>
+                    <p>Lightly battered veggies.</p><button class="btn-view"
+                        onclick="openRecipe('Veggie Tempura', 'Potato, Carrot, Tempura batter', '1. Dip in batter. 2. Flash fry in hot oil.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Onigiri</h3>
+                    <p>Rice balls with tuna.</p><button class="btn-view"
+                        onclick="openRecipe('Onigiri', 'Rice, Nori, Halal Canned Tuna', '1. Season rice. 2. Fill with tuna. 3. Shape into triangle.')">Get
+                        Recipe</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="korea" class="country-section">
+            <h2>🇰🇷 Korea</h2>
+            <div class="recipe-grid">
+                <div class="recipe-card">
+                    <h3>Beef Bulgogi</h3>
+                    <p>Sweet savory grilled beef.</p><button class="btn-view"
+                        onclick="openRecipe('Beef Bulgogi', 'Beef ribeye, Pear, Soy sauce', '1. Marinate beef overnight. 2. Grill on high heat.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Bibimbap</h3>
+                    <p>Mixed rice bowl.</p><button class="btn-view"
+                        onclick="openRecipe('Bibimbap', 'Rice, Fried egg, Veggies', '1. Sauté veggies. 2. Arrange over rice. 3. Add gochujang.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Korean Wings</h3>
+                    <p>Sticky spicy chicken.</p><button class="btn-view"
+                        onclick="openRecipe('Korean Fried Chicken', 'Chicken wings, Gochujang', '1. Double fry chicken. 2. Toss in spicy glaze.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Tteokbokki</h3>
+                    <p>Spicy rice cakes.</p><button class="btn-view"
+                        onclick="openRecipe('Tteokbokki', 'Rice cakes, Chili paste', '1. Simmer cakes in sauce. 2. Add boiled eggs.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Japchae</h3>
+                    <p>Glass noodles with beef.</p><button class="btn-view"
+                        onclick="openRecipe('Japchae', 'Sweet potato noodles, Veggies', '1. Boil noodles. 2. Stir fry with soy and sesame.')">Get
+                        Recipe</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="usa" class="country-section">
+            <h2>🇺🇸 America</h2>
+            <div class="recipe-grid">
+                <div class="recipe-card">
+                    <h3>Smash Burger</h3>
+                    <p>Thin crispy beef patties.</p><button class="btn-view"
+                        onclick="openRecipe('Smash Burger', 'Halal Ground Beef, Brioche, Cheese', '1. Ball meat. 2. Smash flat on griddle. 3. Melt cheese.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Buffalo Wings</h3>
+                    <p>Spicy fried wings.</p><button class="btn-view"
+                        onclick="openRecipe('Buffalo Wings', 'Chicken, Hot Sauce, Butter', '1. Fry wings. 2. Toss in buffalo sauce.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Philly Cheesesteak</h3>
+                    <p>Beef and cheese sandwich.</p><button class="btn-view"
+                        onclick="openRecipe('Philly Cheesesteak', 'Shaved beef, Onions, Bread', '1. Grill beef and onions. 2. Melt cheese. 3. Stuff roll.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>Mac & Cheese</h3>
+                    <p>Cheesy baked pasta.</p><button class="btn-view"
+                        onclick="openRecipe('Mac & Cheese', 'Macaroni, Cheddar, Milk', '1. Make cheese sauce. 2. Mix pasta. 3. Bake.')">Get
+                        Recipe</button>
+                </div>
+                <div class="recipe-card">
+                    <h3>BBQ Beef Ribs</h3>
+                    <p>Smoky halal ribs.</p><button class="btn-view"
+                        onclick="openRecipe('BBQ Beef Ribs', 'Short ribs, BBQ Sauce', '1. Season and slow cook. 2. Glaze and broil.')">Get
+                        Recipe</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div id="recipeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRecipe()">&times;</span>
+            <h2 id="modalTitle" style="color: var(--primary);"></h2>
+            <hr>
+            <h4>🛒 Ingredients</h4>
+            <p id="modalIngredients"></p>
+            <h4>👨‍🍳 Instructions</h4>
+            <p id="modalSteps"></p>
+        </div>
+    </div>
+
+    <script>
+        function openRecipe(name, ingredients, steps) {
+            document.getElementById('modalTitle').innerText = name;
+            document.getElementById('modalIngredients').innerText = ingredients;
+            document.getElementById('modalSteps').innerText = steps;
+            document.getElementById('recipeModal').style.display = "block";
+        }
+
+        function closeRecipe() {
+            document.getElementById('recipeModal').style.display = "none";
+        }
+
+        // Close modal if user clicks outside the box
+        window.onclick = function (event) {
+            let modal = document.getElementById('recipeModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+    <footer>
+        <p>Ezzu's KooKbook &copy; 2026</p>
+    </footer>
+
+</body>
+
+</html>
