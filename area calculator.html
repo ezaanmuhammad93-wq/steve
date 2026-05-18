@@ -4,32 +4,24 @@
 </head>
 <body>
         <script>
-            var choice = prompt("Choose a shape to calculate the area: \n1. rectangle \n2. Parallelogram \n3. circle \n4. Triangle");
+            var choice = prompt("Choose a shape to calculate the perimeter: \n1. rectangle \n2. triangle");
                 if(choice == "1") {
                     var L = prompt("enter lenght:");
                     var B = prompt("enter breadth:");
-                    var result = (number(L) * number(B));
-                    alert("The area of the rectangle is: " + result);
+                    var result = (2 * (number(L) + number(B)));
+                    alert("The perimeter of the rectangle is: " + result);
                 }
 
-                   if (choice == "2") {
-                        var H = prompt("enter height:");
-                        var CB = prompt("enter corresponding base:");
-                        var result = (number(H) * number(CB));
-                        alert("The area of the parallelogram is: " + result);
-                    }
+                if(choice == "2") {
+                    var A = prompt("enter side A:");
+                    var B = prompt("enter side B:");
+                    var C = prompt("enter side C:");
+                    var result = (number(A) + number(B) + number(C));
+                    alert("The perimeter of the triangle is: " + result);
+                }
 
-                       if (choice == "3") {
-                            var R = prompt("enter radius:");
-                            var result = (3.14 * number(R) * number(R));
-                            alert("The area of the circle is: " + result);
-                        }
-
-                       if (choice == "4") {
-                            var B = prompt("enter base:");
-                            var H = prompt("enter height:");
-                            var result = (0.5 * number(B) * number(H));
-                            alert("The area of the triangle is: " + result);
-                        }
+                        
+                
+                        
         </script>
 </body>
