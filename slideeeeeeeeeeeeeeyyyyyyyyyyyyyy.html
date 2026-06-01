@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+        <body>
+                <!--Slideshow-->
+                <img class="mems"
+                    src="https://plugins-media.makeupar.com/smb/blog/post/2025-11-06/webp_7e8d1b39-888d-4828-b28c-b9bd7fa31164.jpg"
+                    alt="SYBAU">
+                
+                <img class="mems" src="https://media.tenor.com/c3U-tHe4snYAAAAe/sonion.png" alt="SONION">
+                
+                <img class="mems" src="https://media.tenor.com/QKK1um2qExcAAAAM/funny-tongue.gif" alt="FUNNI">
+
+                <script>
+                    // Automatic Slideshow - change image every 3 seconds
+                        var myIndex = 0;//counting images
+                        carousel(); //starting function 
+
+                        function carousel() {
+                            var i;
+                            var x = document.getElementsByClassName("mems");
+                            for (i = 0; i < x.length; i++) {//select all images and hide
+                                x[i].style.display = "none"; //hiding all images
+                            }
+                            myIndex++;
+                            if (myIndex > x.length) { myIndex = 1 }
+                            x[myIndex - 1].style.display = "block"; //shows current image other reamin hidden
+                            setTimeout(carousel, 2000);
+                        }
+                </script>
+        </body>
+</html>

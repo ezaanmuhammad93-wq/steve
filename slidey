@@ -1,0 +1,15 @@
+// Automatic Slideshow - change image every 3 seconds
+var myIndex = 0; // counting images
+carousel(); // starting function
+
+function carousel() {
+    var i;
+    var x = document.getElementsByClassName("mems");
+    for (i = 0; i < x.length; i++) { // select all images and hide
+        x[i].style.display = "none"; // hiding all images
+    }
+    myIndex++;
+    if (myIndex > x.length) { myIndex = 1 }
+    x[myIndex - 1].style.display = "block"; // shows current image other remain hidden
+    setTimeout(carousel, 2000); 
+}
